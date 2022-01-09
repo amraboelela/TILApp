@@ -1,6 +1,7 @@
 import Fluent
 import FluentPostgresDriver
 import Vapor
+import Leaf
 
 // configures your application
 public func configure(_ app: Application) throws {
@@ -15,7 +16,16 @@ public func configure(_ app: Application) throws {
         database: Environment.get("DATABASE_NAME") ?? "vapor_database"
     ), as: .psql)
 
-    app.migrations.add(CreateTodo())
+    // 1
+    app.migrations.add(CreateAcronym())
+      
+    // 2
+    app.logger.logLevel = .debug
+
+    // 3
+    try app.autoMigrate().wait()
+
+    app.views.use(.leaf)
 
     // register routes
     try routes(app)
